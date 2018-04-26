@@ -1,0 +1,31 @@
+# Language setting
+language: node_js
+
+# Version number
+node_js:
+  - "6"
+
+build:
+  ci:
+    - pwd
+  on_success:
+   - echo CI Running
+   - export IMAGE_NAME=530443623308.dkr.ecr.us-east-1.amazonaws.com/test
+   - export TAG_NAME=26-services
+   - sudo docker build -t $IMAGE_NAME:latest .
+   - sudo docker tag -f $IMAGE_NAME:latest $IMAGE_NAME:$TAG_NAME
+   - sudo docker push $IMAGE_NAME:$TAG_NAME
+#   - sudo echo "versionName=$TAG_NAME.$BUILD_NUMBER" >> $JOB_STATE/cb-services-api-img.env
+   - sudo echo "versionName=$TAG_NAME" >> $JOB_STATE/cb-services-api-img.env
+   - sudo echo "buildNumber=$BUILD_NUMBER" >> $JOB_STATE/cb-services-api-img.env
+
+
+
+branches:
+  only:
+    - master
+
+integrations:
+   hub:
+     - integrationName: awskey1
+       type: ecr
